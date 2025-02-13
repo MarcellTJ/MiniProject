@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Interface</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: url(jeff.jpg);
+            background-attachment: fixed;
+            
+
+            position: relative;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+        .password-display {
+            font-size: 2em;
+            margin-bottom: 20px;
+            user-select: none;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            letter-spacing: normal;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 340px;
+        }
+        .buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 120px);
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+        .button {
+    width: 120px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffc0cb;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.5em;
+    user-select: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+}
+
+.button:active {
+    transform: scale(0.95) translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+
+        
+        .button:hover {
+            transform: scale(1.1);
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            display: none;
+            flex-direction: column;
+        }
+        .alert {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 30px 50px;
+            border-radius: 20px;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+            font-size: 2em;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .choice-buttons {
+            display: flex;
+            gap: 20px;
+        }
+        .choice-button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ff6b81, #ffa69e);
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="password-display" id="passwordDisplay">****</div>
+        <div class="buttons">
+            <div class="button">1</div>
+            <div class="button">2</div>
+            <div class="button">3</div>
+            <div class="button">4</div>
+            <div class="button">5</div>
+            <div class="button">6</div>
+            <div class="button">7</div>
+            <div class="button">8</div>
+            <div class="button">9</div>
+            <div style="grid-column: 2;" class="button">0</div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay">
+        <div class="alert" id="alertBox">Will you be my Valentine?</div>
+        <div class="choice-buttons">
+            <button class="choice-button" id="yesButton">Yes</button>
+            <button class="choice-button" id="noButton">No</button>
+        </div>
+    </div>
+
+    <script>
+        const correctPassword = '1234';
+        let enteredPassword = '';
+
+        const passwordDisplay = document.getElementById('passwordDisplay');
+        const buttons = document.querySelectorAll('.button');
+        const overlay = document.getElementById('overlay');
+        const yesButton = document.getElementById('yesButton');
+        const noButton = document.getElementById('noButton');
+
+        let noSize = 1;
+        let yesSize = 1;
+
+        function updateDisplay() {
+            passwordDisplay.textContent = enteredPassword.padEnd(4, '*').replace(/./g, (char, i) => i < enteredPassword.length ? '● ' : '* ');
+        }
+
+        function showValentinePrompt() {
+            overlay.style.display = 'flex';
+        }
+
+        function checkPassword() {
+            if (enteredPassword.length === 4) {
+                if (enteredPassword === correctPassword) {
+                    showValentinePrompt();
+                } else {
+                    alert('Access Denied!');
+                }
+                enteredPassword = '';
+                updateDisplay();
+            }
+        }
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const value = button.textContent;
+                if (value >= '0' && value <= '9' && enteredPassword.length < 4) {
+                    enteredPassword += value;
+                    updateDisplay();
+                    checkPassword();
+                }
+            });
+        });
+
+        noButton.addEventListener('click', () => {
+            noSize *= 0.6;
+            yesSize *= 1.5;
+            noButton.style.transform = `scale(${noSize})`;
+            yesButton.style.transform = `scale(${yesSize})`;
+            if (yesSize > 5) {
+                yesButton.style.width = '100vw';
+                yesButton.style.height = '100vh';
+                yesButton.textContent = '💖 YES! 💖';
+                noButton.style.display = 'none';
+            }
+        });
+
+        yesButton.addEventListener('click', () => {
+            alert('Yay! Happy Valentine’s Day! 💝');
+            overlay.style.display = 'none';
+            noButton.style.transform = `scale(1)`;
+            yesButton.style.transform = `scale(1)`;
+            yesButton.style.width = '';
+            yesButton.style.height = '';
+            noButton.style.display = '';
+            noSize = 1;
+            yesSize = 1;
+            yesButton.textContent = 'Yes';
+        });
+
+        updateDisplay();
+    </script>
+</body>
+</html>
